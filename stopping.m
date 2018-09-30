@@ -32,50 +32,70 @@ m1 = M1*u; %Atom mass [kg]
 
 % Target Property
 %M2 = 12 ;  %Atomic Mass of target particle  [u] or [g/mol]
-m2 = M2*u;  %Atom mass [kg]
-%Z2 = 6 ;   %Charge of target particle [C]
-rho= 3;     %Target Material Density [g/cm^3]
-n = rho*Na/M2*10^6; %atomic density [#/m^3]
+%m2 = M2*u;  %Atom mass [kg]
+
 
 % Other Useful Constant
-a = 0.8853*a0/(Z1^(1/2)+Z2^(1/2))^(2/3); %Screening Length
-V0 = c/137;               %Bohr velocity [m/s]
-V_up1 = V0*Z1^(2/3);      %The lower limit 1 for high energy
-V_up2 = V0*Z2^(1/2);      %The lower limit 2 for high energy
-E_up1 = (M1*u*V_up1^2)/2; %The lower limit 1 for high energy [J]
-E_up2 = (M1*u*V_up2^2)/2; %The lower limit 2 for high energy [J]
-
-% Low energy region
-k=k_correction*1.212*Z1^(7/6)*Z2/(Z1^(2/3)+Z2^(2/3))^(3/2)/M1^(1/2)*eV^(1/2)*Ai^2;
-p=1/2;
-S_low=k*E^p;
+% a = 0.8853*a0/(Z1^(1/2)+Z2^(1/2))^(2/3); %Screening Length
+% V0 = c/137;               %Bohr velocity [m/s]
+% V_up1 = V0*Z1^(2/3);      %The lower limit 1 for high energy
+% V_up2 = V0*Z2^(1/2);      %The lower limit 2 for high energy
+% E_up1 = (M1*u*V_up1^2)/2; %The lower limit 1 for high energy [J]
+% E_up2 = (M1*u*V_up2^2)/2; %The lower limit 2 for high energy [J]
 
 
-% High energy region
-v1 = (2*E/m1)^(1/2); %velocity of incident particle [m/s]
-if Z2<13 
-    I0 = 12+7*Z2^(-1);
-    I0 = I0*eV;
-else
-    I0 = 9.76+58.5*Z2^(-1.19);
-    I0 = I0*eV;
-end
-Eb = 2*me*(v1^2)/Z2/I0;
-%S_high=ke^2*8*pi*Z1^2*e^4/I0/Eb*log(Eb);
 
-% Middle energy
-if Z1<3
-    C=100*Z1/Z2;
-else
-    C=5;
-end
-S_b  = ke^2*8*pi*Z1^2*e^4/I0/Eb*log(Eb+1+C/Eb);
-S_mid= 1/(1/S_low + 1/S_b);
-
-if E<0.5*MeV
+if E<25*M1*keV
+    
+    
+    % Low energy region
+    k=k_correction*1.212*Z1^(7/6)*Z2/(Z1^(2/3)+Z2^(2/3))^(3/2)/M1^(1/2)*eV^(1/2)*Ai^2;
+    p=1/2;
+    S_low=k*E^p;
     Se = S_low;
-else
+    
+    
+    
+elseif E<2500*M1*keV
+    
+    % Low energy region
+    k=k_correction*1.212*Z1^(7/6)*Z2/(Z1^(2/3)+Z2^(2/3))^(3/2)/M1^(1/2)*eV^(1/2)*Ai^2;
+    p=1/2;
+    S_low=k*E^p;
+    % High energy region
+    v1 = (2*E/m1)^(1/2); %velocity of incident particle [m/s]
+    if Z2<13 
+        I0 = 12+7*Z2^(-1);
+        I0 = I0*eV;
+    else
+        I0 = 9.76+58.5*Z2^(-1.19);
+        I0 = I0*eV;
+    end
+    Eb = 2*me*(v1^2)/Z2/I0;
+    % Middle energy
+    if Z1<3
+        C=100*Z1/Z2;
+    else
+        C=5;
+    end
+    S_b  = ke^2*8*pi*Z1^2*e^4/I0/Eb*log(Eb+1+C/Eb);
+    S_mid= 1/(1/S_low + 1/S_b);
     Se  = S_mid;
+    
+else
+    % High energy region
+    v1 = (2*E/m1)^(1/2); %velocity of incident particle [m/s]
+    if Z2<13 
+        I0 = 12+7*Z2^(-1);
+        I0 = I0*eV;
+    else
+        I0 = 9.76+58.5*Z2^(-1.19);
+        I0 = I0*eV;
+    end
+    Eb = 2*me*(v1^2)/Z2/I0;
+    S_high=ke^2*8*pi*Z1^2*e^4/I0/Eb*log(Eb);
+    Se = S_high;
+        
 end
 
 end
